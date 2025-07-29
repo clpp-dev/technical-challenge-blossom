@@ -24,13 +24,12 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleFavorite(character.id);
+    toggleFavorite(character);
   };
 
   return (
     <Link to={`/character/${character.id}`}>
       <div className="group relative bg-white/10 backdrop-blur-md rounded-xl overflow-hidden hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-        {/* Favorite Button */}
         <button
           onClick={handleFavoriteClick}
           className="absolute top-3 right-3 z-10 bg-black/50 backdrop-blur-sm rounded-full p-2 hover:bg-black/70 transition-colors duration-200"
@@ -54,7 +53,6 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
           </svg>
         </button>
 
-        {/* Character Image */}
         <div className="relative overflow-hidden">
           <img
             src={character.image}
@@ -63,7 +61,6 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
             loading="lazy"
           />
           
-          {/* Status Indicator */}
           <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1">
             <div className={`w-3 h-3 rounded-full ${getStatusColor(character.status)}`} />
             <span className="text-white text-sm font-medium capitalize">
@@ -72,7 +69,6 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
           </div>
         </div>
 
-        {/* Character Info */}
         <div className="p-4">
           <h3 className="text-white font-bold text-lg mb-2 group-hover:text-blue-300 transition-colors duration-200 line-clamp-1">
             {character.name}
@@ -95,7 +91,6 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
             </p>
           </div>
 
-          {/* Episodes count */}
           <div className="mt-3 pt-3 border-t border-white/20">
             <p className="text-blue-300 text-sm font-medium">
               {character.episode.length} episode{character.episode.length !== 1 ? 's' : ''}

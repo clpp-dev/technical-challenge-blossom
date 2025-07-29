@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useSearch } from '../../context/SearchContext';
-import { useFavorites } from '../../context/FavoritesContext';
+import { useFavorites } from '../../hooks/useFavorites';
 import MobileFilters from './components/MobileFilters';
 import type { CharacterFilter as FilterType, Character } from '../../graphql/types';
 
