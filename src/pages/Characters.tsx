@@ -3,13 +3,14 @@ import { useGetCharacters } from '../hooks/useGraphQL';
 import { useSearch } from '../context/SearchContext';
 import { useFavorites } from '../context/FavoritesContext';
 import Sidebar from '../components/Sidebar/Sidebar';
-import CharacterList from '../components/CharacterList';
+import CharacterList from '../components/Sidebar/components/CharacterList';
 import CharacterDetailPanel from '../components/CharacterDetailPanel';
 import type { CharacterFilter as FilterType, Character } from '../graphql/types';
 
 const Characters: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterType>({});
+  const [characterFilter, setCharacterFilter] = useState<string>('All');
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   
   // Usar el contexto global para el término de búsqueda y favoritos
@@ -28,13 +29,27 @@ const Characters: React.FC = () => {
 
   const characters = useMemo(() => {
     const allCharacters = data?.characters?.results || [];
-    // Filtrar personajes que están en favoritos
     const favoriteIds = new Set(favorites.map(fav => fav.id));
-    return allCharacters.filter(character => !favoriteIds.has(character.id));
-  }, [data?.characters?.results, favorites]);
+    
+    // Apply character filter logic
+    switch (characterFilter) {
+      case 'Starred':
+        // Show only favorited characters in the main list
+        return favorites;
+      case 'Others':
+        // Show only non-favorited characters
+        return allCharacters.filter(character => !favoriteIds.has(character.id));
+      default: // 'All'
+        // Show all characters but exclude favorites to avoid duplicates
+        return allCharacters.filter(character => !favoriteIds.has(character.id));
+    }
+  }, [data?.characters?.results, favorites, characterFilter]);
 
-  const handleFilterChange = useCallback((newFilters: FilterType) => {
+  const handleFilterChange = useCallback((newFilters: FilterType, newCharacterFilter?: string) => {
     setFilters(newFilters);
+    if (newCharacterFilter !== undefined) {
+      setCharacterFilter(newCharacterFilter);
+    }
     setCurrentPage(1);
   }, []);
 

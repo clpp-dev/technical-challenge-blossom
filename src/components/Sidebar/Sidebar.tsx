@@ -6,7 +6,7 @@ import { useFavorites } from '../../context/FavoritesContext';
 import type { CharacterFilter as FilterType, Character } from '../../graphql/types';
 
 interface SidebarProps {
-  onFilterChange: (filters: FilterType) => void;
+  onFilterChange: (filters: FilterType, characterFilter?: string) => void;
   onSearch: (searchTerm: string) => void;
   onCharacterSelect?: (character: Character) => void;
   selectedCharacterId?: string;
@@ -53,6 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
     setLoading(true);
     const filters: FilterType = {};
     
+    // Apply GraphQL filters
     if (pendingSpeciesFilter !== 'All') {
       filters.species = pendingSpeciesFilter;
     }
@@ -65,8 +66,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
       filters.gender = pendingGenderFilter.toLowerCase() as 'female' | 'male' | 'genderless' | 'unknown';
     }
     
-    console.log('Applying filters:', filters);
-    await onFilterChange(filters);
+    console.log('Applying filters:', filters, 'Character filter:', pendingCharacterFilter);
+    // Pass both GraphQL filters and character filter to parent
+    await onFilterChange(filters, pendingCharacterFilter);
     setLoading(false);
     setShowFilters(false);
   };
@@ -77,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
     setPendingSpeciesFilter('All');
     setPendingStatusFilter('All');
     setPendingGenderFilter('All');
-    await onFilterChange({});
+    await onFilterChange({}, 'All');
     setLoading(false);
     setShowFilters(false);
   };
@@ -112,7 +114,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
             placeholder="Search or filter results"
             className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <div className="absolute inset-y-0 right-2 p-1 w-8 h-8 top-[50%] translate-y-[-50%] 
+            flex items-center justify-center cursor-pointer hover:bg-primary-100 rounded-[8px] transition-colors duration-200"
+            style={{ 
+              backgroundColor: showFilters ? '#EEE3FF' : '',
+            }}
+          >
             <button
               type="button"
               aria-label="Open filters"
@@ -136,10 +143,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
         {showFilters && (
           <div className="absolute top-[125px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 z-10">
             {/* Active Filters Display */}
-            {(pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') && (
-              <div className="mb-4 p-2 bg-blue-50 rounded-md border border-blue-200">
+            {(pendingCharacterFilter !== 'All' || pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') && (
+              <div className="mb-4 p-2 bg-blue-50 rounded-md border border-blue-200 hidden">
                 <h4 className="text-xs font-medium text-blue-600 mb-1">Active Filters:</h4>
                 <div className="flex flex-wrap gap-1">
+                  {pendingCharacterFilter !== 'All' && (
+                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                      Character: {pendingCharacterFilter}
+                    </span>
+                  )}
                   {pendingSpeciesFilter !== 'All' && (
                     <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
                       Species: {pendingSpeciesFilter}
@@ -266,7 +278,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
                 )}
               </button>
               
-              {(pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') && (
+              {(pendingCharacterFilter !== 'All' || pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') && (
                 <button
                   className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-colors text-sm"
                   onClick={handleClearFilters}

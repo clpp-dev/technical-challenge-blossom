@@ -1,6 +1,6 @@
 import React from 'react';
-import { useFavorites } from '../context/FavoritesContext';
-import type { Character } from '../graphql/types';
+import { useFavorites } from '../../../context/FavoritesContext';
+import type { Character } from '../../../graphql/types';
 
 interface CharacterListProps {
   characters: Character[];
