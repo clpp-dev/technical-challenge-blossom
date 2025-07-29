@@ -97,11 +97,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
 
 
   return (
-    <div className="relative w-full min-w-96 max-w-[605px] min-h-[380px] bg-white  p-6 shadow-lg flex flex-col">
+    <section className="relative w-full min-w-96 max-w-[605px] min-h-[380px] bg-white  p-6 shadow-lg flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Rick and Morty list</h1>
         {/* Search */}
-        <div className="relative">
+        <article className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -138,10 +138,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
               )}
             </button>
           </div>
-        </div>
+        </article>
 
         {showFilters && (
-          <div className="absolute top-[125px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 z-10">
+          <article className="absolute top-[125px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 z-10">
             {/* Active Filters Display */}
             {(pendingCharacterFilter !== 'All' || pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') && (
               <div className="mb-4 p-2 bg-blue-50 rounded-md border border-blue-200 hidden">
@@ -288,16 +288,16 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
                 </button>
               )}
             </div>
-          </div>
+          </article>
         )}
       </div>
 
 
-      <div className="mb-6 overflow-y-auto max-h-[320px]">
+      <article className="mb-6 overflow-y-auto max-h-[320px]">
         <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
           STARRED CHARACTERS ({favorites.length})
         </h3>
-        <div className="space-y-2">
+        <article className="space-y-2">
           {favorites.length === 0 ? (
             <div className="text-center py-4 text-gray-400 text-sm">
               No starred characters yet
@@ -334,9 +334,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
               </div>
             ))
           )}
-        </div>
-      </div>
-    </div>
+        </article>
+      </article>
+    </section>
   );
 };
 

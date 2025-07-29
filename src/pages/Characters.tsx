@@ -13,11 +13,9 @@ const Characters: React.FC = () => {
   const [characterFilter, setCharacterFilter] = useState<string>('All');
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   
-  // Usar el contexto global para el término de búsqueda y favoritos
   const { searchTerm, setSearchTerm } = useSearch();
   const { favorites } = useFavorites();
 
-  // Combine search and filters
   const combinedFilters = useMemo(() => {
     return {
       ...filters,
@@ -30,17 +28,13 @@ const Characters: React.FC = () => {
   const characters = useMemo(() => {
     const allCharacters = data?.characters?.results || [];
     const favoriteIds = new Set(favorites.map(fav => fav.id));
-    
-    // Apply character filter logic
+
     switch (characterFilter) {
       case 'Starred':
-        // Show only favorited characters in the main list
         return favorites;
       case 'Others':
-        // Show only non-favorited characters
         return allCharacters.filter(character => !favoriteIds.has(character.id));
-      default: // 'All'
-        // Show all characters but exclude favorites to avoid duplicates
+      default:
         return allCharacters.filter(character => !favoriteIds.has(character.id));
     }
   }, [data?.characters?.results, favorites, characterFilter]);
@@ -62,7 +56,6 @@ const Characters: React.FC = () => {
     setSelectedCharacter(character);
   }, []);
 
-  // Quitar el loader de pantalla completa - solo mostrar error si no hay data
   if (error && !data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -76,7 +69,6 @@ const Characters: React.FC = () => {
 
   return (
     <div className="h-screen flex bg-gray-50">
-      {/* Left Sidebar with Filters and Character List */}
       <div className="flex flex-col">
         <Sidebar 
           onFilterChange={handleFilterChange}
@@ -91,7 +83,6 @@ const Characters: React.FC = () => {
         />
       </div>
 
-      {/* Right Panel - Character Detail */}
       <CharacterDetailPanel character={selectedCharacter} />
     </div>
   );

@@ -13,8 +13,8 @@ const CharacterDetail: React.FC = () => {
 
   if (error || !data?.character) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-        <div className="text-center text-white">
+      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+        <article className="text-center text-white">
           <h2 className="text-2xl font-bold mb-4">Character not found</h2>
           <p className="text-gray-300 mb-6">
             {error?.message || 'The character you are looking for does not exist.'}
@@ -25,8 +25,8 @@ const CharacterDetail: React.FC = () => {
           >
             Back to Characters
           </Link>
-        </div>
-      </div>
+        </article>
+      </section>
     );
   }
 
