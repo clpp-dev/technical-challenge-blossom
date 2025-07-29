@@ -21,7 +21,7 @@ const CharacterList: React.FC<CharacterListProps> = ({
   };
 
   return (
-    <div className="w-80 bg-white border-t border-gray-200 h-full overflow-y-auto">
+    <div className="w-full bg-white border-t border-gray-200 h-full overflow-y-auto">
       <div className="p-4">
         <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">
           CHARACTERS ({characters.length})

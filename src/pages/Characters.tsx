@@ -1,16 +1,18 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useGetCharacters } from '../hooks/useGraphQL';
+import { useSearch } from '../context/SearchContext';
 import Sidebar from '../components/Sidebar/Sidebar';
 import CharacterList from '../components/CharacterList';
 import CharacterDetailPanel from '../components/CharacterDetailPanel';
-import LoadingSpinner from '../components/LoadingSpinner';
 import type { CharacterFilter as FilterType, Character } from '../graphql/types';
 
 const Characters: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterType>({});
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  
+  // Usar el contexto global para el término de búsqueda
+  const { searchTerm, setSearchTerm } = useSearch();
 
   // Combine search and filters
   const combinedFilters = useMemo(() => {
@@ -20,16 +22,7 @@ const Characters: React.FC = () => {
     };
   }, [filters, searchTerm]);
 
-  // Debug: log the current filters and search term
-  console.log('Current filters:', filters);
-  console.log('Current search term:', searchTerm);
-  console.log('Combined filters:', combinedFilters);
-
-  const { data, loading, error } = useGetCharacters(currentPage, combinedFilters);
-
-  // Debug: log the response
-  console.log('API Response:', data);
-  console.log('Characters count:', data?.characters?.results?.length);
+  const { data, error } = useGetCharacters(currentPage, combinedFilters);
 
   const characters = useMemo(() => {
     return data?.characters?.results || [];
@@ -43,14 +36,13 @@ const Characters: React.FC = () => {
   const handleSearch = useCallback((search: string) => {
     setSearchTerm(search);
     setCurrentPage(1);
-  }, []);
+  }, [setSearchTerm]);
 
   const handleCharacterSelect = useCallback((character: Character) => {
     setSelectedCharacter(character);
   }, []);
 
-  if (loading && !data) return <LoadingSpinner />;
-
+  // Quitar el loader de pantalla completa - solo mostrar error si no hay data
   if (error && !data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -79,18 +71,6 @@ const Characters: React.FC = () => {
 
       {/* Right Panel - Character Detail */}
       <CharacterDetailPanel character={selectedCharacter} />
-      
-      {/* Loading overlay for pagination */}
-      {loading && data && (
-        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-4 shadow-lg">
-            <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
-              <span className="text-gray-700">Loading...</span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

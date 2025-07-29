@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
-import { useDebounce } from '../../hooks/useDebounce';
-import type { CharacterFilter as FilterType } from '../../graphql/types';
+import React, { useState, useEffect } from 'react';
+import { useDebounce } from '../hooks/useDebounce';
+import { useSearch } from '../context/SearchContext';
+import type { CharacterFilter as FilterType } from '../graphql/types';
 
 interface SidebarProps {
   onFilterChange: (filters: FilterType) => void;
@@ -10,7 +11,8 @@ interface SidebarProps {
 
 
 const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  // Usar el contexto global para el término de búsqueda
+  const { searchTerm, setSearchTerm } = useSearch();
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pendingCharacterFilter, setPendingCharacterFilter] = useState('All');
@@ -18,13 +20,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  React.useEffect(() => {
+  useEffect(() => {
     onSearch(debouncedSearchTerm);
   }, [debouncedSearchTerm, onSearch]);
 
-  const handleToggleFilters = () => {
-    setShowFilters(!showFilters);
-  };
+  const handleOpenFilters = () => setShowFilters(true);
 
   const handlePendingCharacterFilterChange = (filter: string) => {
     setPendingCharacterFilter(filter);
@@ -46,7 +46,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
 
 
   return (
-    <div className="relative w-full min-w-96 max-w-[605px] bg-white h-screen p-6 shadow-lg flex flex-col">
+    <div className="relative w-full max-w-[605px] bg-white h-screen p-6 shadow-lg flex flex-col">
+      {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Rick and Morty list</h1>
         {/* Search */}
@@ -67,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
             <button
               type="button"
               aria-label="Open filters"
-              onClick={handleToggleFilters}
+              onClick={handleOpenFilters}
               className="focus:outline-none"
             >
               {loading ? (
@@ -84,75 +85,78 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
           </div>
         </div>
 
-        {showFilters && (
-          <div className="absolute top-[130px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 border-red-500">
-            {/* Character Filter */}
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-                CHARACTER
-              </h3>
-              <div className="flex space-x-2">
-                {['All', 'Starred', 'Others'].map((filter) => (
-                  <button
-                    key={filter}
-                    onClick={() => handlePendingCharacterFilterChange(filter)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      pendingCharacterFilter === filter
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {filter}
-                  </button>
-                ))}
-              </div>
+
+      {/* Panel de filtros - aparece entre search y lista cuando showFilters es true */}
+      {showFilters && (
+        <div className="absolute top-[130px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 border-red-500">
+          {/* Character Filter */}
+          <div className="mb-4">
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
+              CHARACTER
+            </h3>
+            <div className="flex space-x-2">
+              {['All', 'Starred', 'Others'].map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => handlePendingCharacterFilterChange(filter)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    pendingCharacterFilter === filter
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {filter}
+                </button>
+              ))}
             </div>
-            
-            {/* Species Filter */}
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-                SPECIE
-              </h3>
-              <div className="flex space-x-2">
-                {['All', 'Human', 'Alien'].map((species) => (
-                  <button
-                    key={species}
-                    onClick={() => handlePendingSpeciesFilterChange(species)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      pendingSpeciesFilter === species
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {species}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Filter Button */}
-            <button
-              className="w-full bg-gray-200 text-gray-600 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors flex items-center justify-center text-sm"
-              onClick={handleApplyFilters}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                  </svg>
-                  Filtering...
-                </>
-              ) : (
-                'Filter'
-              )}
-            </button>
           </div>
-        )}
+          
+          {/* Species Filter */}
+          <div className="mb-4">
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
+              SPECIE
+            </h3>
+            <div className="flex space-x-2">
+              {['All', 'Human', 'Alien'].map((species) => (
+                <button
+                  key={species}
+                  onClick={() => handlePendingSpeciesFilterChange(species)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    pendingSpeciesFilter === species
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {species}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Filter Button */}
+          <button
+            className="w-full bg-gray-200 text-gray-600 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors flex items-center justify-center text-sm"
+            onClick={handleApplyFilters}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                Filtering...
+              </>
+            ) : (
+              'Filter'
+            )}
+          </button>
+        </div>
+      )}
       </div>
 
 
+      {/* Starred Characters Section */}
       <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
           STARRED CHARACTERS (2)
