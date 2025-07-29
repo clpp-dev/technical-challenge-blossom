@@ -46,9 +46,8 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
   };
 
   return (
-    <div className="flex-1 bg-white overflow-y-auto hidden lg:flex">
-      <div className="p-8">
-        {/* Character Header */}
+    <section className="flex-1 bg-white overflow-y-auto hidden lg:flex">
+      <article className="p-8 w-full">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center">
             <div className='relative'>
@@ -92,7 +91,6 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
           </div>
         </div>
 
-        {/* Character Info Grid */}
         <div className="grid grid-cols-2 gap-6 mb-8">
           <div>
             <h3 className="text-sm font-medium text-gray-500 mb-1">Specie</h3>
@@ -129,7 +127,6 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
           </div>
         </div>
 
-        {/* Episodes */}
         {character.episode.length > 0 && (
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -152,8 +149,8 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </article>
+    </section>
   );
 };
 
