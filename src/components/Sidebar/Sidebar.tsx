@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useSearch } from '../../context/SearchContext';
 import { useFavorites } from '../../context/FavoritesContext';
+import MobileFilters from './components/MobileFilters';
 import type { CharacterFilter as FilterType, Character } from '../../graphql/types';
 
 interface SidebarProps {
@@ -13,10 +15,12 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacterSelect, selectedCharacterId }) => {
+  const navigate = useNavigate();
   const { searchTerm, setSearchTerm } = useSearch();
   const { favorites, toggleFavorite } = useFavorites();
   
   const [showFilters, setShowFilters] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pendingCharacterFilter, setPendingCharacterFilter] = useState('All');
   const [pendingSpeciesFilter, setPendingSpeciesFilter] = useState('All');
@@ -24,7 +28,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
   const [pendingGenderFilter, setPendingGenderFilter] = useState('All');
 
   const [isActiveFilters, setIsActiveFilters] = useState(false);
-  console.log("🚀 ~ Sidebar ~ isActiveFilters:", isActiveFilters)
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -42,7 +45,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
   }, [pendingCharacterFilter, pendingSpeciesFilter, pendingStatusFilter, pendingGenderFilter]);
 
   const handleToggleFilters = () => {
-    setShowFilters(!showFilters);
+    // En mobile (ancho menor a lg), abrir filtros en fullscreen
+    if (window.innerWidth < 1024) {
+      setShowMobileFilters(true);
+    } else {
+      // En desktop, mostrar dropdown como antes
+      setShowFilters(!showFilters);
+    }
   };
 
   const handlePendingCharacterFilterChange = (filter: string) => {
@@ -100,6 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
     await onFilterChange(filters, pendingCharacterFilter);
     setLoading(false);
     setShowFilters(false);
+    setShowMobileFilters(false);
   };
 
   const handleClearFilters = async () => {
@@ -112,7 +122,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
     await onFilterChange({}, 'All');
     setLoading(false);
     setShowFilters(false);
+    setShowMobileFilters(false);
     setIsActiveFilters(false);
+  };
+
+  const handleCloseMobileFilters = () => {
+    setShowMobileFilters(false);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent, character: Character) => {
@@ -121,8 +136,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
   };
 
   const handleFavoriteCharacterSelect = (character: Character) => {
-    if (onCharacterSelect) {
-      onCharacterSelect(character);
+    // En mobile (ancho menor a lg), navegar a la ruta dinámica
+    if (window.innerWidth < 1024) {
+      navigate(`/character/${character.id}`);
+    } else {
+      // En desktop, usar el callback para mostrar en el panel
+      if (onCharacterSelect) {
+        onCharacterSelect(character);
+      }
     }
   };
 
@@ -311,7 +332,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
                     Filtering...
                   </>
                 ) : (
-                  'Apply Filters'
+                  'Filter'
                 )}
               </button>
               
@@ -334,7 +355,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
         <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
           STARRED CHARACTERS ({favorites.length})
         </h3>
-        <article className="space-y-2 overflow-y-auto max-h-[180px]">
+        <article className="space-y-2 overflow-y-auto max-h-[100%] pb-10">
           {favorites.length === 0 ? (
             <div className="text-center py-4 text-gray-400 text-sm">
               No starred characters yet
@@ -373,6 +394,24 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
           )}
         </article>
       </article>
+
+      {/* Mobile Filters Component */}
+      <MobileFilters
+        isOpen={showMobileFilters}
+        onClose={handleCloseMobileFilters}
+        pendingCharacterFilter={pendingCharacterFilter}
+        pendingSpeciesFilter={pendingSpeciesFilter}
+        pendingStatusFilter={pendingStatusFilter}
+        pendingGenderFilter={pendingGenderFilter}
+        onCharacterFilterChange={handlePendingCharacterFilterChange}
+        onSpeciesFilterChange={handlePendingSpeciesFilterChange}
+        onStatusFilterChange={handlePendingStatusFilterChange}
+        onGenderFilterChange={handlePendingGenderFilterChange}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
+        loading={loading}
+        isActiveFilters={isActiveFilters}
+      />
     </section>
   );
 };

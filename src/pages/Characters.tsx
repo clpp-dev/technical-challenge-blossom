@@ -4,7 +4,7 @@ import { useSearch } from '../context/SearchContext';
 import { useFavorites } from '../context/FavoritesContext';
 import Sidebar from '../components/Sidebar/Sidebar';
 import CharacterList from '../components/Sidebar/components/CharacterList';
-import CharacterDetailPanel from '../components/CharacterDetailPanel';
+import CharacterDetailPanel from '../components/CharacterDetailPanel/CharacterDetailPanel';
 import type { CharacterFilter as FilterType, Character } from '../graphql/types';
 
 const Characters: React.FC = () => {
@@ -69,7 +69,7 @@ const Characters: React.FC = () => {
 
   return (
     <div className="h-screen flex bg-gray-50">
-      <div className="flex flex-col max-w-[380px]">
+      <div className="flex flex-col w-full lg:max-w-[380px]">
         <Sidebar 
           onFilterChange={handleFilterChange}
           onSearch={handleSearch}
