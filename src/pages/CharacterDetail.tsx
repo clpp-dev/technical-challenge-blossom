@@ -2,15 +2,12 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useGetCharacter } from '../hooks/useGraphQL';
 import { useFavorites } from '../hooks/useFavorites';
-import { useComments } from '../hooks/useComments';
 import LoadingSpinner from '../components/LoadingSpinner';
-import CommentSection from '../components/CommentSection';
 
 const CharacterDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data, loading, error } = useGetCharacter(id!);
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { comments, addComment } = useComments(id!);
 
   if (loading) return <LoadingSpinner />;
 
@@ -78,8 +75,8 @@ const CharacterDetail: React.FC = () => {
                 <svg
                   className={`w-6 h-6 ${
                     isFavorite(character.id) 
-                      ? 'text-red-500 fill-current' 
-                      : 'text-white hover:text-red-400'
+                      ? 'text-green-500 fill-current' 
+                      : 'text-white hover:text-green-400'
                   }`}
                   fill={isFavorite(character.id) ? 'currentColor' : 'none'}
                   stroke="currentColor"
@@ -168,13 +165,6 @@ const CharacterDetail: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Comments Section */}
-        <CommentSection 
-          characterId={character.id} 
-          comments={comments} 
-          onAddComment={addComment}
-        />
       </div>
     </div>
   );

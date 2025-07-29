@@ -5,7 +5,6 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to characters page
     navigate('/characters', { replace: true });
   }, [navigate]);
 
