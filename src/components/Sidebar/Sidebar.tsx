@@ -3,18 +3,20 @@ import React, { useState } from 'react';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useSearch } from '../../context/SearchContext';
 import { useFavorites } from '../../context/FavoritesContext';
-import type { CharacterFilter as FilterType } from '../../graphql/types';
+import type { CharacterFilter as FilterType, Character } from '../../graphql/types';
 
 interface SidebarProps {
   onFilterChange: (filters: FilterType) => void;
   onSearch: (searchTerm: string) => void;
+  onCharacterSelect?: (character: Character) => void;
+  selectedCharacterId?: string;
 }
 
 
-const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacterSelect, selectedCharacterId }) => {
   // Usar contextos globales
   const { searchTerm, setSearchTerm } = useSearch();
-  const { favorites } = useFavorites();
+  const { favorites, toggleFavorite } = useFavorites();
   
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,9 +51,20 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
     setShowFilters(false);
   };
 
+  const handleFavoriteClick = (e: React.MouseEvent, character: Character) => {
+    e.stopPropagation();
+    toggleFavorite(character);
+  };
+
+  const handleFavoriteCharacterSelect = (character: Character) => {
+    if (onCharacterSelect) {
+      onCharacterSelect(character);
+    }
+  };
+
 
   return (
-    <div className="relative w-full min-w-96 max-w-[605px] bg-white h-screen p-6 shadow-lg flex flex-col">
+    <div className="relative w-full min-w-96 max-w-[605px] min-h-[380px] bg-white  p-6 shadow-lg flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Rick and Morty list</h1>
         {/* Search */}
@@ -90,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
         </div>
 
         {showFilters && (
-          <div className="absolute top-[130px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 border-red-500">
+          <div className="absolute top-[125px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2">
             {/* Character Filter */}
             <div className="mb-4">
               <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
@@ -169,7 +182,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
             </div>
           ) : (
             favorites.map((character) => (
-              <div key={character.id} className="flex items-center p-3 bg-purple-100 rounded-lg">
+              <div 
+                key={character.id} 
+                onClick={() => handleFavoriteCharacterSelect(character)}
+                className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+                  selectedCharacterId === character.id
+                    ? 'bg-purple-200 border border-purple-300'
+                    : 'bg-purple-100 hover:bg-purple-200'
+                }`}
+              >
                 <img 
                   src={character.image} 
                   alt={character.name}
@@ -179,9 +200,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
                   <h4 className="font-medium text-gray-800">{character.name}</h4>
                   <p className="text-sm text-gray-500">{character.species}</p>
                 </div>
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                </svg>
+                <button
+                  onClick={(e) => handleFavoriteClick(e, character)}
+                  className="ml-2 p-1 hover:bg-white rounded-full transition-colors"
+                  aria-label="Remove from favorites"
+                >
+                  <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                </button>
               </div>
             ))
           )}

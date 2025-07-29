@@ -51,11 +51,35 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
         {/* Character Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center">
-            <img 
-              src={character.image} 
-              alt={character.name}
-              className="w-20 h-20 rounded-full mr-6 object-cover"
-            />
+            <div className='relative'>
+              <img 
+                src={character.image} 
+                alt={character.name}
+                className="w-20 h-20 rounded-full mr-6 object-cover flex relative"
+              />
+              <button
+                onClick={() => toggleFavorite(character)}
+                className="p-1 rounded-full bg-white transition-colors absolute bottom-0 right-3 z-20"
+              >
+                <svg 
+                  className={`w-6 h-6 ${
+                    isFavorite(character.id) 
+                      ? 'text-green-500 fill-current' 
+                      : 'text-gray-400 hover:text-green-400'
+                  }`}
+                  fill={isFavorite(character.id) ? 'currentColor' : 'none'}
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+              </button>         
+            </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{character.name}</h1>
               <div className="flex items-center mb-1">
@@ -66,29 +90,6 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
               </div>
             </div>
           </div>
-          
-          <button
-            onClick={() => toggleFavorite(character)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <svg 
-              className={`w-6 h-6 ${
-                isFavorite(character.id) 
-                  ? 'text-green-500 fill-current' 
-                  : 'text-gray-400 hover:text-green-400'
-              }`}
-              fill={isFavorite(character.id) ? 'currentColor' : 'none'}
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
-          </button>
         </div>
 
         {/* Character Info Grid */}

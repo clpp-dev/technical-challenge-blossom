@@ -49,7 +49,7 @@ const CharacterList: React.FC<CharacterListProps> = ({
               </div>
               <button
                 onClick={(e) => handleFavoriteClick(e, character)}
-                className="ml-2 p-1 hover:bg-gray-100 rounded transition-colors"
+                className="ml-2 p-1 hover:bg-white rounded-full transition-colors"
               >
                 <svg 
                   className={`w-5 h-5 ${

@@ -27,7 +27,6 @@ interface FavoritesProviderProps {
 const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }) => {
   const [favorites, setFavorites] = useState<Character[]>([]);
 
-  // Cargar favoritos del localStorage al inicializar
   useEffect(() => {
     const savedFavorites = localStorage.getItem('rickAndMortyFavorites');
     if (savedFavorites) {
@@ -39,7 +38,6 @@ const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Guardar favoritos en localStorage cuando cambien
   useEffect(() => {
     localStorage.setItem('rickAndMortyFavorites', JSON.stringify(favorites));
   }, [favorites]);
@@ -47,7 +45,7 @@ const FavoritesProvider: React.FC<FavoritesProviderProps> = ({ children }) => {
   const addFavorite = (character: Character) => {
     setFavorites(prev => {
       if (prev.some(fav => fav.id === character.id)) {
-        return prev; // Ya está en favoritos
+        return prev;
       }
       return [...prev, character];
     });

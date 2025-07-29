@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useGetCharacters } from '../hooks/useGraphQL';
 import { useSearch } from '../context/SearchContext';
+import { useFavorites } from '../context/FavoritesContext';
 import Sidebar from '../components/Sidebar/Sidebar';
 import CharacterList from '../components/CharacterList';
 import CharacterDetailPanel from '../components/CharacterDetailPanel';
@@ -11,8 +12,9 @@ const Characters: React.FC = () => {
   const [filters, setFilters] = useState<FilterType>({});
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   
-  // Usar el contexto global para el término de búsqueda
+  // Usar el contexto global para el término de búsqueda y favoritos
   const { searchTerm, setSearchTerm } = useSearch();
+  const { favorites } = useFavorites();
 
   // Combine search and filters
   const combinedFilters = useMemo(() => {
@@ -25,8 +27,11 @@ const Characters: React.FC = () => {
   const { data, error } = useGetCharacters(currentPage, combinedFilters);
 
   const characters = useMemo(() => {
-    return data?.characters?.results || [];
-  }, [data?.characters?.results]);
+    const allCharacters = data?.characters?.results || [];
+    // Filtrar personajes que están en favoritos
+    const favoriteIds = new Set(favorites.map(fav => fav.id));
+    return allCharacters.filter(character => !favoriteIds.has(character.id));
+  }, [data?.characters?.results, favorites]);
 
   const handleFilterChange = useCallback((newFilters: FilterType) => {
     setFilters(newFilters);
@@ -61,6 +66,8 @@ const Characters: React.FC = () => {
         <Sidebar 
           onFilterChange={handleFilterChange}
           onSearch={handleSearch}
+          onCharacterSelect={handleCharacterSelect}
+          selectedCharacterId={selectedCharacter?.id}
         />
         <CharacterList 
           characters={characters}

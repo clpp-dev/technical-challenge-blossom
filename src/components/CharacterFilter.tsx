@@ -41,7 +41,7 @@ const CharacterFilter: React.FC<CharacterFilterProps> = ({ onFilterChange }) => 
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="text-sm text-red-400 hover:text-red-300 underline transition-colors"
+              className="text-sm text-green-400 hover:text-green-300 underline transition-colors"
             >
               Clear all
             </button>
