@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFavorites } from '../../context/FavoritesContext';
+import { useFavorites } from '../../hooks/useFavorites';
 import type { Character } from '../../graphql/types';
 
 interface CharacterDetailPanelProps {

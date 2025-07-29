@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { GET_CHARACTER_BY_ID } from '../graphql/queries';
-import { useFavorites } from '../context/FavoritesContext';
+import { useFavorites } from '../hooks/useFavorites';
 import LoadingSpinner from '../components/LoadingSpinner';
 import type { Character } from '../graphql/types';
 

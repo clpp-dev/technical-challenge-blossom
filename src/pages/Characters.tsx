@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useGetCharacters } from '../hooks/useGraphQL';
 import { useSearch } from '../context/SearchContext';
-import { useFavorites } from '../context/FavoritesContext';
+import { useFavorites } from '../hooks/useFavorites';
 import Sidebar from '../components/Sidebar/Sidebar';
 import CharacterList from '../components/Sidebar/components/CharacterList';
 import CharacterDetailPanel from '../components/CharacterDetailPanel/CharacterDetailPanel';

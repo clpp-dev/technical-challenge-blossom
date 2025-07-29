@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFavorites } from '../../../context/FavoritesContext';
+import { useFavorites } from '../../../hooks/useFavorites';
 import type { Character } from '../../../graphql/types';
 
 type SortOrder = 'asc' | 'desc';
