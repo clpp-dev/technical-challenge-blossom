@@ -150,11 +150,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
             style={{ 
               backgroundColor: showFilters ? '#EEE3FF' : '',
             }}
+            onClick={handleToggleFilters}
           >
             <button
               type="button"
               aria-label="Open filters"
-              onClick={handleToggleFilters}
               className="focus:outline-none"
             >
               {loading ? (
@@ -172,29 +172,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
         </article>
 
         {showFilters && (
-          <article className="absolute top-[125px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 z-10">
+          <article className="absolute top-[125px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 z-10 ">
             {/* Active Filters Display */}
             {(pendingCharacterFilter !== 'All' || pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') && (
-              <div className="mb-4 p-2 bg-blue-50 rounded-md border border-blue-200 hidden">
-                <h4 className="text-xs font-medium text-blue-600 mb-1">Active Filters:</h4>
+              <div className="mb-4 p-2 bg-primary-600 rounded-md border border-blue-200 hidden">
+                <h4 className="text-xs font-medium text-white mb-1">Active Filters:</h4>
                 <div className="flex flex-wrap gap-1">
                   {pendingCharacterFilter !== 'All' && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                    <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded">
                       Character: {pendingCharacterFilter}
                     </span>
                   )}
                   {pendingSpeciesFilter !== 'All' && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                    <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded">
                       Species: {pendingSpeciesFilter}
                     </span>
                   )}
                   {pendingStatusFilter !== 'All' && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                    <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded">
                       Status: {pendingStatusFilter}
                     </span>
                   )}
                   {pendingGenderFilter !== 'All' && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                    <span className="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded">
                       Gender: {pendingGenderFilter}
                     </span>
                   )}
