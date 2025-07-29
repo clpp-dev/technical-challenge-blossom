@@ -46,7 +46,7 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
   };
 
   return (
-    <div className="flex-1 bg-white overflow-y-auto">
+    <div className="flex-1 bg-white overflow-y-auto hidden lg:flex">
       <div className="p-8">
         {/* Character Header */}
         <div className="flex items-start justify-between mb-6">

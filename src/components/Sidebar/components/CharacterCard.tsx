@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useFavorites } from '../hooks/useFavorites';
-import type { Character } from '../graphql/types';
+import { useFavorites } from '../../../hooks/useFavorites';
+import type { Character } from '../../../graphql/types';
 
 interface CharacterCardProps {
   character: Character;

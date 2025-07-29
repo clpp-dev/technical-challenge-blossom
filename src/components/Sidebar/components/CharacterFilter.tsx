@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { CharacterFilter as FilterType } from '../graphql/types';
+import type { CharacterFilter as FilterType } from '../../../graphql/types';
 
 interface CharacterFilterProps {
   onFilterChange: (filters: FilterType) => void;

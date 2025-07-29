@@ -3,20 +3,19 @@ import { useGetCharacters } from '../hooks/useGraphQL';
 import { useSearch } from '../context/SearchContext';
 import { useFavorites } from '../context/FavoritesContext';
 import Sidebar from '../components/Sidebar/Sidebar';
-import CharacterList from '../components/CharacterList';
+import CharacterList from '../components/Sidebar/components/CharacterList';
 import CharacterDetailPanel from '../components/CharacterDetailPanel';
 import type { CharacterFilter as FilterType, Character } from '../graphql/types';
 
 const Characters: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterType>({});
+  const [characterFilter, setCharacterFilter] = useState<string>('All');
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   
-  // Usar el contexto global para el término de búsqueda y favoritos
   const { searchTerm, setSearchTerm } = useSearch();
   const { favorites } = useFavorites();
 
-  // Combine search and filters
   const combinedFilters = useMemo(() => {
     return {
       ...filters,
@@ -28,13 +27,23 @@ const Characters: React.FC = () => {
 
   const characters = useMemo(() => {
     const allCharacters = data?.characters?.results || [];
-    // Filtrar personajes que están en favoritos
     const favoriteIds = new Set(favorites.map(fav => fav.id));
-    return allCharacters.filter(character => !favoriteIds.has(character.id));
-  }, [data?.characters?.results, favorites]);
 
-  const handleFilterChange = useCallback((newFilters: FilterType) => {
+    switch (characterFilter) {
+      case 'Starred':
+        return favorites;
+      case 'Others':
+        return allCharacters.filter(character => !favoriteIds.has(character.id));
+      default:
+        return allCharacters.filter(character => !favoriteIds.has(character.id));
+    }
+  }, [data?.characters?.results, favorites, characterFilter]);
+
+  const handleFilterChange = useCallback((newFilters: FilterType, newCharacterFilter?: string) => {
     setFilters(newFilters);
+    if (newCharacterFilter !== undefined) {
+      setCharacterFilter(newCharacterFilter);
+    }
     setCurrentPage(1);
   }, []);
 
@@ -47,7 +56,6 @@ const Characters: React.FC = () => {
     setSelectedCharacter(character);
   }, []);
 
-  // Quitar el loader de pantalla completa - solo mostrar error si no hay data
   if (error && !data) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -61,7 +69,6 @@ const Characters: React.FC = () => {
 
   return (
     <div className="h-screen flex bg-gray-50">
-      {/* Left Sidebar with Filters and Character List */}
       <div className="flex flex-col">
         <Sidebar 
           onFilterChange={handleFilterChange}
@@ -76,7 +83,6 @@ const Characters: React.FC = () => {
         />
       </div>
 
-      {/* Right Panel - Character Detail */}
       <CharacterDetailPanel character={selectedCharacter} />
     </div>
   );
