@@ -12,9 +12,7 @@ interface SidebarProps {
   selectedCharacterId?: string;
 }
 
-
 const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacterSelect, selectedCharacterId }) => {
-  // Usar contextos globales
   const { searchTerm, setSearchTerm } = useSearch();
   const { favorites, toggleFavorite } = useFavorites();
   
@@ -22,6 +20,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
   const [loading, setLoading] = useState(false);
   const [pendingCharacterFilter, setPendingCharacterFilter] = useState('All');
   const [pendingSpeciesFilter, setPendingSpeciesFilter] = useState('All');
+  const [pendingStatusFilter, setPendingStatusFilter] = useState('All');
+  const [pendingGenderFilter, setPendingGenderFilter] = useState('All');
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -41,12 +41,43 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
     setPendingSpeciesFilter(species);
   };
 
+  const handlePendingStatusFilterChange = (status: string) => {
+    setPendingStatusFilter(status);
+  };
+
+  const handlePendingGenderFilterChange = (gender: string) => {
+    setPendingGenderFilter(gender);
+  };
+
   const handleApplyFilters = async () => {
     setLoading(true);
     const filters: FilterType = {};
-    if (pendingSpeciesFilter !== 'All') filters.species = pendingSpeciesFilter;
-    // Puedes agregar lógica para Starred/Others aquí si es necesario
+    
+    if (pendingSpeciesFilter !== 'All') {
+      filters.species = pendingSpeciesFilter;
+    }
+    
+    if (pendingStatusFilter !== 'All') {
+      filters.status = pendingStatusFilter.toLowerCase() as 'alive' | 'dead' | 'unknown';
+    }
+    
+    if (pendingGenderFilter !== 'All') {
+      filters.gender = pendingGenderFilter.toLowerCase() as 'female' | 'male' | 'genderless' | 'unknown';
+    }
+    
+    console.log('Applying filters:', filters);
     await onFilterChange(filters);
+    setLoading(false);
+    setShowFilters(false);
+  };
+
+  const handleClearFilters = async () => {
+    setLoading(true);
+    setPendingCharacterFilter('All');
+    setPendingSpeciesFilter('All');
+    setPendingStatusFilter('All');
+    setPendingGenderFilter('All');
+    await onFilterChange({});
     setLoading(false);
     setShowFilters(false);
   };
@@ -103,13 +134,37 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
         </div>
 
         {showFilters && (
-          <div className="absolute top-[125px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2">
+          <div className="absolute top-[125px] mx-5 left-0 w-[90%] mb-6 p-4 bg-gray-50 rounded-lg border border-b-2 z-10">
+            {/* Active Filters Display */}
+            {(pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') && (
+              <div className="mb-4 p-2 bg-blue-50 rounded-md border border-blue-200">
+                <h4 className="text-xs font-medium text-blue-600 mb-1">Active Filters:</h4>
+                <div className="flex flex-wrap gap-1">
+                  {pendingSpeciesFilter !== 'All' && (
+                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                      Species: {pendingSpeciesFilter}
+                    </span>
+                  )}
+                  {pendingStatusFilter !== 'All' && (
+                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                      Status: {pendingStatusFilter}
+                    </span>
+                  )}
+                  {pendingGenderFilter !== 'All' && (
+                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                      Gender: {pendingGenderFilter}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+            
             {/* Character Filter */}
             <div className="mb-4">
               <h3 className="text-sm font-medium text-gray-500 tracking-wide mb-3">
                 Character
               </h3>
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 flex-wrap">
                 {['All', 'Starred', 'Others'].map((filter) => (
                   <button
                     key={filter}
@@ -147,25 +202,80 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
                 ))}
               </div>
             </div>
-            
-            {/* Filter Button */}
-            <button
-              className="w-full bg-gray-200 text-gray-500 hover:text-white py-2 rounded-lg font-medium hover:bg-primary-600 transition-colors flex items-center justify-center text-sm"
-              onClick={handleApplyFilters}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 3V1M9 3C7.89543 3 7 3.89543 7 5C7 6.10457 7.89543 7 9 7M9 3C10.1046 3 11 3.89543 11 5C11 6.10457 10.1046 7 9 7M3 15C4.10457 15 5 14.1046 5 13C5 11.8954 4.10457 11 3 11M3 15C1.89543 15 1 14.1046 1 13C1 11.8954 1.89543 11 3 11M3 15V17M3 11V1M9 7V17M15 15C16.1046 15 17 14.1046 17 13C17 11.8954 16.1046 11 15 11M15 15C13.8954 15 13 14.1046 13 13C13 11.8954 13.8954 11 15 11M15 15V17M15 11V1" stroke="#8054C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
 
-                  Filtering...
-                </>
-              ) : (
-                'Filter'
+            {/* Status Filter */}
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-gray-500 tracking-wide mb-3">
+                Status
+              </h3>
+              <div className="flex space-x-2">
+                {['All', 'Alive', 'Dead', 'Unknown'].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => handlePendingStatusFilterChange(status)}
+                    className={`px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                      pendingStatusFilter === status
+                        ? 'bg-primary-100 text-primary-600'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Gender Filter */}
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-gray-500 tracking-wide mb-3">
+                Gender
+              </h3>
+              <div className="flex gap-2 flex-wrap">
+                {['All', 'Male', 'Female', 'Genderless', 'Unknown'].map((gender) => (
+                  <button
+                    key={gender}
+                    onClick={() => handlePendingGenderFilterChange(gender)}
+                    className={`px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                      pendingGenderFilter === gender
+                        ? 'bg-primary-100 text-primary-600'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {gender}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Filter Buttons */}
+            <div className="flex gap-2">
+              <button
+                className="flex-1 bg-gray-200 text-gray-500 hover:text-white py-2 rounded-lg font-medium hover:bg-primary-600 transition-colors flex items-center justify-center text-sm"
+                onClick={handleApplyFilters}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 3V1M9 3C7.89543 3 7 3.89543 7 5C7 6.10457 7.89543 7 9 7M9 3C10.1046 3 11 3.89543 11 5C11 6.10457 10.1046 7 9 7M3 15C4.10457 15 5 14.1046 5 13C5 11.8954 4.10457 11 3 11M3 15C1.89543 15 1 14.1046 1 13C1 11.8954 1.89543 11 3 11M3 15V17M3 11V1M9 7V17M15 15C16.1046 15 17 14.1046 17 13C17 11.8954 16.1046 11 15 11M15 15C13.8954 15 13 14.1046 13 13C13 11.8954 13.8954 11 15 11M15 15V17M15 11V1" stroke="#8054C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Filtering...
+                  </>
+                ) : (
+                  'Apply Filters'
+                )}
+              </button>
+              
+              {(pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') && (
+                <button
+                  className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-medium transition-colors text-sm"
+                  onClick={handleClearFilters}
+                  disabled={loading}
+                >
+                  Clear
+                </button>
               )}
-            </button>
+            </div>
           </div>
         )}
       </div>
