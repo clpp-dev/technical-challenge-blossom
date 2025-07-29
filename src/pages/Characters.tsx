@@ -69,7 +69,7 @@ const Characters: React.FC = () => {
 
   return (
     <div className="h-screen flex bg-gray-50">
-      <div className="flex flex-col">
+      <div className="flex flex-col max-w-[380px]">
         <Sidebar 
           onFilterChange={handleFilterChange}
           onSearch={handleSearch}
