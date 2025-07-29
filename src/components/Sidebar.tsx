@@ -123,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
                   onClick={() => handlePendingSpeciesFilterChange(species)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                     pendingSpeciesFilter === species
-                      ? 'bg-purple-500 text-white'
+                      ? 'bg-primary-100 text-primary-600'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >

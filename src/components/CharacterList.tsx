@@ -32,7 +32,7 @@ const CharacterList: React.FC<CharacterListProps> = ({
             <div
               key={character.id}
               onClick={() => onCharacterSelect(character)}
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+              className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors border-b mb-2 border-gray-200 ${
                 selectedCharacterId === character.id
                   ? 'bg-purple-100 border border-purple-200'
                   : 'hover:bg-gray-50'
@@ -41,7 +41,7 @@ const CharacterList: React.FC<CharacterListProps> = ({
               <img 
                 src={character.image} 
                 alt={character.name}
-                className="w-10 h-10 rounded-full mr-3 object-cover"
+                className="w-8 h-8 rounded-full mr-3 object-cover"
               />
               <div className="flex-1 min-w-0">
                 <h4 className="font-medium text-gray-800 truncate">{character.name}</h4>
