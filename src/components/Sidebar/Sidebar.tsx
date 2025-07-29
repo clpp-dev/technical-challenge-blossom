@@ -97,7 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
 
 
   return (
-    <section className="relative w-full min-w-96 max-w-[605px] min-h-[380px] bg-white  p-6 shadow-lg flex flex-col">
+    <section className="relative w-full min-w-96 max-w-[605px] lg:min-h-[380px] max-h-[400px] lg:max-h-none bg-white  p-6 shadow-lg flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Rick and Morty list</h1>
         {/* Search */}
@@ -293,11 +293,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
       </div>
 
 
-      <article className="mb-6 overflow-y-auto max-h-[320px]">
+      <article className="mb-6 overflow-hidden max-h-[380px]">
         <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
           STARRED CHARACTERS ({favorites.length})
         </h3>
-        <article className="space-y-2">
+        <article className="space-y-2 overflow-y-auto max-h-[180px]">
           {favorites.length === 0 ? (
             <div className="text-center py-4 text-gray-400 text-sm">
               No starred characters yet
