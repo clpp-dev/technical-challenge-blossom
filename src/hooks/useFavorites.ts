@@ -5,7 +5,6 @@ const FAVORITES_STORAGE_KEY = 'rickandmorty_favorites';
 export const useFavorites = () => {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  // Load favorites from localStorage on mount
   useEffect(() => {
     const savedFavorites = localStorage.getItem(FAVORITES_STORAGE_KEY);
     if (savedFavorites) {
@@ -18,7 +17,6 @@ export const useFavorites = () => {
     }
   }, []);
 
-  // Save favorites to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(favorites)));
   }, [favorites]);

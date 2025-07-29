@@ -10,7 +10,6 @@ import type {
   CharacterFilter
 } from '../graphql/types';
 
-// Hook for fetching characters with pagination and filters
 export const useGetCharacters = (page = 1, filter?: CharacterFilter) => {
   return useQuery<GetCharactersResponse>(GET_CHARACTERS, {
     variables: { page, filter },
@@ -18,7 +17,6 @@ export const useGetCharacters = (page = 1, filter?: CharacterFilter) => {
   });
 };
 
-// Hook for fetching a character by ID
 export const useGetCharacter = (id: string) => {
   return useQuery<GetCharacterResponse>(GET_CHARACTER_BY_ID, {
     variables: { id },
@@ -27,7 +25,6 @@ export const useGetCharacter = (id: string) => {
   });
 };
 
-// Hook for fetching multiple characters by IDs
 export const useGetMultipleCharacters = (ids: string[]) => {
   return useQuery(GET_MULTIPLE_CHARACTERS, {
     variables: { ids },

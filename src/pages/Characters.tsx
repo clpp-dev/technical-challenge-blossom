@@ -1,128 +1,87 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useGetCharacters } from '../hooks/useGraphQL';
-import CharacterCard from '../components/CharacterCard';
-import CharacterFilter from '../components/CharacterFilter';
-import Pagination from '../components/Pagination';
+import Sidebar from '../components/Sidebar';
+import CharacterList from '../components/CharacterList';
+import CharacterDetailPanel from '../components/CharacterDetailPanel';
 import LoadingSpinner from '../components/LoadingSpinner';
-import type { CharacterFilter as FilterType } from '../graphql/types';
+import type { CharacterFilter as FilterType, Character } from '../graphql/types';
 
 const Characters: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterType>({});
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
 
-  const { data, loading, error } = useGetCharacters(currentPage, filters);
+  // Combine search and filters
+  const combinedFilters = useMemo(() => {
+    return {
+      ...filters,
+      ...(searchTerm ? { name: searchTerm } : {}),
+    };
+  }, [filters, searchTerm]);
 
-  // Sort characters by name
-  const sortedCharacters = useMemo(() => {
-    if (!data?.characters?.results) return [];
-    
-    const sorted = [...data.characters.results].sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      
-      if (sortOrder === 'asc') {
-        return nameA.localeCompare(nameB);
-      } else {
-        return nameB.localeCompare(nameA);
-      }
-    });
-    
-    return sorted;
-  }, [data?.characters?.results, sortOrder]);
+  const { data, loading, error } = useGetCharacters(currentPage, combinedFilters);
 
-  const handleFilterChange = (newFilters: FilterType) => {
+  const characters = useMemo(() => {
+    return data?.characters?.results || [];
+  }, [data?.characters?.results]);
+
+  const handleFilterChange = useCallback((newFilters: FilterType) => {
     setFilters(newFilters);
-    setCurrentPage(1); // Reset to first page when filtering
-  };
+    setCurrentPage(1);
+  }, []);
 
-  const toggleSortOrder = () => {
-    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-  };
+  const handleSearch = useCallback((search: string) => {
+    setSearchTerm(search);
+    setCurrentPage(1);
+  }, []);
 
-  if (loading) return <LoadingSpinner />;
-  
-  if (error) {
+  const handleCharacterSelect = useCallback((character: Character) => {
+    setSelectedCharacter(character);
+  }, []);
+
+  if (loading && !data) return <LoadingSpinner />;
+
+  if (error && !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center text-white">
-          <h2 className="text-2xl font-bold mb-4">Error loading characters</h2>
-          <p className="text-gray-300">{error.message}</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error loading characters</h2>
+          <p className="text-gray-600">{error.message}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 font-rick">
-            Rick and Morty
-          </h1>
-          <p className="text-xl text-gray-300">
-            Explore the multiverse and discover all characters
-          </p>
-        </div>
-
-        {/* Filters and Sort */}
-        <div className="mb-8">
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-6">
-            <CharacterFilter onFilterChange={handleFilterChange} />
-            
-            <div className="mt-4 flex justify-between items-center">
-              <button
-                onClick={toggleSortOrder}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
-              >
-                Sort by Name 
-                {sortOrder === 'asc' ? '(A-Z)' : '(Z-A)'}
-                <svg 
-                  className={`w-4 h-4 transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
-              </button>
-              
-              {data?.characters?.info && (
-                <div className="text-white text-sm">
-                  Showing {sortedCharacters.length} of {data.characters.info.count} characters
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Characters Grid */}
-        {sortedCharacters.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
-              {sortedCharacters.map((character) => (
-                <CharacterCard key={character.id} character={character} />
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {data?.characters?.info && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={data.characters.info.pages}
-                onPageChange={setCurrentPage}
-                hasNext={!!data.characters.info.next}
-                hasPrev={!!data.characters.info.prev}
-              />
-            )}
-          </>
-        ) : (
-          <div className="text-center text-white py-12">
-            <h3 className="text-2xl font-bold mb-4">No characters found</h3>
-            <p className="text-gray-300">Try adjusting your filters</p>
-          </div>
-        )}
+    <div className="h-screen flex bg-gray-50">
+      {/* Left Sidebar with Filters and Character List */}
+      <div className="flex flex-col">
+        <Sidebar 
+          onFilterChange={handleFilterChange}
+          onSearch={handleSearch}
+        />
+        <CharacterList 
+          characters={characters}
+          onCharacterSelect={handleCharacterSelect}
+          selectedCharacterId={selectedCharacter?.id}
+        />
       </div>
+
+      {/* Right Panel - Character Detail */}
+      <CharacterDetailPanel character={selectedCharacter} />
+      
+      {/* Loading overlay for pagination */}
+      {loading && data && (
+        <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-4 shadow-lg">
+            <div className="flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+              <span className="text-gray-700">Loading...</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

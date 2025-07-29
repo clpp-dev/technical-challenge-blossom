@@ -6,7 +6,6 @@ const COMMENTS_STORAGE_KEY = 'rickandmorty_comments';
 export const useComments = (characterId: string) => {
   const [comments, setComments] = useState<CharacterComment[]>([]);
 
-  // Load comments from localStorage on mount
   useEffect(() => {
     const savedComments = localStorage.getItem(COMMENTS_STORAGE_KEY);
     if (savedComments) {
@@ -20,7 +19,6 @@ export const useComments = (characterId: string) => {
     }
   }, [characterId]);
 
-  // Save comments to localStorage whenever it changes
   useEffect(() => {
     const savedComments = localStorage.getItem(COMMENTS_STORAGE_KEY);
     let allComments: CharacterComment[] = [];
@@ -32,8 +30,6 @@ export const useComments = (characterId: string) => {
         console.error('Error parsing saved comments:', error);
       }
     }
-
-    // Remove old comments for this character and add new ones
     const otherComments = allComments.filter(comment => comment.characterId !== characterId);
     const updatedComments = [...otherComments, ...comments];
     
