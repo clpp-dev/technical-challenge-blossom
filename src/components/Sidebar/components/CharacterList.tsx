@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '../../../context/FavoritesContext';
 import type { Character } from '../../../graphql/types';
 
@@ -16,6 +17,7 @@ const CharacterList: React.FC<CharacterListProps> = ({
   selectedCharacterId 
 }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const navigate = useNavigate();
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
   const sortedCharacters = useMemo(() => {
@@ -30,6 +32,14 @@ const CharacterList: React.FC<CharacterListProps> = ({
 
   const toggleSortOrder = () => {
     setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handleCharacterClick = (character: Character) => {
+    if (window.innerWidth < 1024) {
+      navigate(`/character/${character.id}`);
+    } else {
+      onCharacterSelect(character);
+    }
   };
 
   const handleFavoriteClick = (e: React.MouseEvent, character: Character) => {
@@ -78,7 +88,7 @@ const CharacterList: React.FC<CharacterListProps> = ({
           {sortedCharacters.map((character) => (
             <div
               key={character.id}
-              onClick={() => onCharacterSelect(character)}
+              onClick={() => handleCharacterClick(character)}
               className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
                 selectedCharacterId === character.id
                   ? 'bg-purple-100 border border-purple-200'
