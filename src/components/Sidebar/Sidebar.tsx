@@ -81,6 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
 
   const handleApplyFilters = async () => {
     setLoading(true);
+    setSearchTerm('');
     const filters: FilterType = {};
     
     if (pendingSpeciesFilter !== 'All') {
