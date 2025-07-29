@@ -23,11 +23,23 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
   const [pendingStatusFilter, setPendingStatusFilter] = useState('All');
   const [pendingGenderFilter, setPendingGenderFilter] = useState('All');
 
+  const [isActiveFilters, setIsActiveFilters] = useState(false);
+  console.log("🚀 ~ Sidebar ~ isActiveFilters:", isActiveFilters)
+
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   React.useEffect(() => {
     onSearch(debouncedSearchTerm);
   }, [debouncedSearchTerm, onSearch]);
+
+  // Sincronizar isActiveFilters cuando cambien los filtros
+  React.useEffect(() => {
+    if (pendingCharacterFilter !== 'All' || pendingSpeciesFilter !== 'All' || pendingStatusFilter !== 'All' || pendingGenderFilter !== 'All') {
+      setIsActiveFilters(true);
+    } else {
+      setIsActiveFilters(false);
+    }
+  }, [pendingCharacterFilter, pendingSpeciesFilter, pendingStatusFilter, pendingGenderFilter]);
 
   const handleToggleFilters = () => {
     setShowFilters(!showFilters);
@@ -35,25 +47,42 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
 
   const handlePendingCharacterFilterChange = (filter: string) => {
     setPendingCharacterFilter(filter);
+    handleViewFilterChange(filter, pendingSpeciesFilter, pendingStatusFilter, pendingGenderFilter);
   };
 
   const handlePendingSpeciesFilterChange = (species: string) => {
     setPendingSpeciesFilter(species);
+    handleViewFilterChange(pendingCharacterFilter, species, pendingStatusFilter, pendingGenderFilter);
   };
 
   const handlePendingStatusFilterChange = (status: string) => {
     setPendingStatusFilter(status);
+    handleViewFilterChange(pendingCharacterFilter, pendingSpeciesFilter, status, pendingGenderFilter);
   };
 
   const handlePendingGenderFilterChange = (gender: string) => {
     setPendingGenderFilter(gender);
+    handleViewFilterChange(pendingCharacterFilter, pendingSpeciesFilter, pendingStatusFilter, gender);
   };
+
+  const handleViewFilterChange = (
+    characterFilter = pendingCharacterFilter,
+    speciesFilter = pendingSpeciesFilter,
+    statusFilter = pendingStatusFilter,
+    genderFilter = pendingGenderFilter
+  ) => {
+    if (characterFilter !== 'All' || speciesFilter !== 'All' || statusFilter !== 'All' || genderFilter !== 'All') {
+      setIsActiveFilters(true);
+    } else {
+      setIsActiveFilters(false);
+    }
+  }
+
 
   const handleApplyFilters = async () => {
     setLoading(true);
     const filters: FilterType = {};
     
-    // Apply GraphQL filters
     if (pendingSpeciesFilter !== 'All') {
       filters.species = pendingSpeciesFilter;
     }
@@ -67,7 +96,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
     }
     
     console.log('Applying filters:', filters, 'Character filter:', pendingCharacterFilter);
-    // Pass both GraphQL filters and character filter to parent
     await onFilterChange(filters, pendingCharacterFilter);
     setLoading(false);
     setShowFilters(false);
@@ -79,9 +107,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
     setPendingSpeciesFilter('All');
     setPendingStatusFilter('All');
     setPendingGenderFilter('All');
+    setSearchTerm('');
     await onFilterChange({}, 'All');
     setLoading(false);
     setShowFilters(false);
+    setIsActiveFilters(false);
   };
 
   const handleFavoriteClick = (e: React.MouseEvent, character: Character) => {
@@ -110,6 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
           <input
             type="text"
             value={searchTerm}
+            onClick={() => setShowFilters(false)}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search or filter results"
             className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -262,9 +293,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch, onCharacter
             {/* Filter Buttons */}
             <div className="flex gap-2">
               <button
-                className="flex-1 bg-gray-200 text-gray-500 hover:text-white py-2 rounded-lg font-medium hover:bg-primary-600 transition-colors flex items-center justify-center text-sm"
+                className="flex-1 bg-gray-200 text-gray-500 hover:text-white py-2 rounded-lg font-medium 
+                hover:bg-primary-600 transition-colors flex items-center justify-center text-sm"
                 onClick={handleApplyFilters}
                 disabled={loading}
+                style={{
+                  color: isActiveFilters ? '#FFFFFF' : '',
+                  backgroundColor: isActiveFilters ? '#8054C7' : ''
+                }}
               >
                 {loading ? (
                   <>

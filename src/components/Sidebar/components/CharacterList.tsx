@@ -21,8 +21,8 @@ const CharacterList: React.FC<CharacterListProps> = ({
   };
 
   return (
-    <div className="w-full bg-white border-t border-gray-200 h-full overflow-y-auto">
-      <div className="p-4">
+    <section className="w-full bg-white border-t border-gray-200 h-full overflow-y-auto">
+      <article className="p-4">
         <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">
           CHARACTERS ({characters.length})
         </h3>
@@ -32,7 +32,7 @@ const CharacterList: React.FC<CharacterListProps> = ({
             <div
               key={character.id}
               onClick={() => onCharacterSelect(character)}
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors border-b mb-2 border-gray-200 ${
+              className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
                 selectedCharacterId === character.id
                   ? 'bg-purple-100 border border-purple-200'
                   : 'hover:bg-gray-50'
@@ -72,8 +72,8 @@ const CharacterList: React.FC<CharacterListProps> = ({
             </div>
           ))}
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
   );
 };
 
