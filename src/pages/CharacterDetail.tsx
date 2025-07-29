@@ -92,13 +92,10 @@ const CharacterDetail: React.FC = () => {
               <path d="M8 15L1 8M1 8L8 1M1 8L19 8" stroke="#8054C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
            </svg>
           </button>
-          {/* <h1 className="text-lg font-semibold text-gray-900">Character Details</h1> */}
         </div>
       </header>
 
-      {/* Character Content */}
       <main className="p-6">
-        {/* Character Header */}
         <div className="flex items-start mb-6">
           <div className="relative">
             <img 
@@ -140,7 +137,6 @@ const CharacterDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Character Details Grid */}
         <div className="space-y-4">
           <div className="bg-gray-50 rounded-lg p-4">
             <h3 className="text-sm font-medium text-gray-500 mb-1">Specie</h3>
@@ -177,7 +173,6 @@ const CharacterDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Episodes Section */}
         {character.episode.length > 0 && (
           <div className="mt-8">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
