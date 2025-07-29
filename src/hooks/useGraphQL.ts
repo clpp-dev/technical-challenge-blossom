@@ -11,9 +11,17 @@ import type {
 } from '../graphql/types';
 
 export const useGetCharacters = (page = 1, filter?: CharacterFilter) => {
+  console.log('useGetCharacters called with:', { page, filter });
+  
   return useQuery<GetCharactersResponse>(GET_CHARACTERS, {
     variables: { page, filter },
     errorPolicy: 'all',
+    onCompleted: () => {
+      console.log('Query completed');
+    },
+    onError: (error) => {
+      console.error('Query error:', error);
+    }
   });
 };
 

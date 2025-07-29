@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useGetCharacters } from '../hooks/useGraphQL';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/Sidebar/Sidebar';
 import CharacterList from '../components/CharacterList';
 import CharacterDetailPanel from '../components/CharacterDetailPanel';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -20,7 +20,16 @@ const Characters: React.FC = () => {
     };
   }, [filters, searchTerm]);
 
+  // Debug: log the current filters and search term
+  console.log('Current filters:', filters);
+  console.log('Current search term:', searchTerm);
+  console.log('Combined filters:', combinedFilters);
+
   const { data, loading, error } = useGetCharacters(currentPage, combinedFilters);
+
+  // Debug: log the response
+  console.log('API Response:', data);
+  console.log('Characters count:', data?.characters?.results?.length);
 
   const characters = useMemo(() => {
     return data?.characters?.results || [];

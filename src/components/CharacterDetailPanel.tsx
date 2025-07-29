@@ -1,7 +1,5 @@
 import React from 'react';
 import { useFavorites } from '../hooks/useFavorites';
-import { useComments } from '../hooks/useComments';
-import CommentSection from './CommentSection';
 import type { Character } from '../graphql/types';
 
 interface CharacterDetailPanelProps {
@@ -10,7 +8,6 @@ interface CharacterDetailPanelProps {
 
 const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
-  const { comments, addComment } = useComments(character?.id || '');
 
   if (!character) {
     return (
@@ -154,13 +151,6 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
             </div>
           </div>
         )}
-
-        {/* Comments Section */}
-        <CommentSection 
-          characterId={character.id} 
-          comments={comments} 
-          onAddComment={addComment}
-        />
       </div>
     </div>
   );
