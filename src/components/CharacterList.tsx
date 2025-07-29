@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFavorites } from '../hooks/useFavorites';
+import { useFavorites } from '../context/FavoritesContext';
 import type { Character } from '../graphql/types';
 
 interface CharacterListProps {
@@ -15,9 +15,9 @@ const CharacterList: React.FC<CharacterListProps> = ({
 }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
 
-  const handleFavoriteClick = (e: React.MouseEvent, characterId: string) => {
+  const handleFavoriteClick = (e: React.MouseEvent, character: Character) => {
     e.stopPropagation();
-    toggleFavorite(characterId);
+    toggleFavorite(character);
   };
 
   return (
@@ -48,14 +48,14 @@ const CharacterList: React.FC<CharacterListProps> = ({
                 <p className="text-sm text-gray-500">{character.species}</p>
               </div>
               <button
-                onClick={(e) => handleFavoriteClick(e, character.id)}
-                className="ml-2 p-1 hover:bg-gray-200 rounded transition-colors"
+                onClick={(e) => handleFavoriteClick(e, character)}
+                className="ml-2 p-1 hover:bg-gray-100 rounded transition-colors"
               >
                 <svg 
                   className={`w-5 h-5 ${
                     isFavorite(character.id) 
-                      ? 'text-red-500 fill-current' 
-                      : 'text-gray-400 hover:text-red-400'
+                      ? 'text-green-500 fill-current' 
+                      : 'text-gray-400 hover:text-green-400'
                   }`}
                   fill={isFavorite(character.id) ? 'currentColor' : 'none'}
                   stroke="currentColor" 

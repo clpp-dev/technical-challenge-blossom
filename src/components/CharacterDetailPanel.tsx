@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFavorites } from '../hooks/useFavorites';
+import { useFavorites } from '../context/FavoritesContext';
 import type { Character } from '../graphql/types';
 
 interface CharacterDetailPanelProps {
@@ -68,14 +68,14 @@ const CharacterDetailPanel: React.FC<CharacterDetailPanelProps> = ({ character }
           </div>
           
           <button
-            onClick={() => toggleFavorite(character.id)}
+            onClick={() => toggleFavorite(character)}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <svg 
               className={`w-6 h-6 ${
                 isFavorite(character.id) 
-                  ? 'text-red-500 fill-current' 
-                  : 'text-gray-400 hover:text-red-400'
+                  ? 'text-green-500 fill-current' 
+                  : 'text-gray-400 hover:text-green-400'
               }`}
               fill={isFavorite(character.id) ? 'currentColor' : 'none'}
               stroke="currentColor" 

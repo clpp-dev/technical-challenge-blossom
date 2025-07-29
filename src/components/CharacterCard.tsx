@@ -38,8 +38,8 @@ const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
           <svg
             className={`w-5 h-5 ${
               isFavorite(character.id) 
-                ? 'text-red-500 fill-current' 
-                : 'text-white hover:text-red-400'
+                ? 'text-green-500 fill-current' 
+                : 'text-white hover:text-green-400'
             }`}
             fill={isFavorite(character.id) ? 'currentColor' : 'none'}
             stroke="currentColor"

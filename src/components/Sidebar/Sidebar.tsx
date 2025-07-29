@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { useDebounce } from '../../hooks/useDebounce';
+import { useSearch } from '../../context/SearchContext';
+import { useFavorites } from '../../context/FavoritesContext';
 import type { CharacterFilter as FilterType } from '../../graphql/types';
 
 interface SidebarProps {
@@ -10,7 +12,10 @@ interface SidebarProps {
 
 
 const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  // Usar contextos globales
+  const { searchTerm, setSearchTerm } = useSearch();
+  const { favorites } = useFavorites();
+  
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pendingCharacterFilter, setPendingCharacterFilter] = useState('All');
@@ -153,39 +158,33 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange, onSearch }) => {
       </div>
 
 
-      <div className="mb-6">
+      <div className="mb-6 overflow-y-auto max-h-[320px]">
         <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-          STARRED CHARACTERS (2)
+          STARRED CHARACTERS ({favorites.length})
         </h3>
         <div className="space-y-2">
-          <div className="flex items-center p-3 bg-purple-100 rounded-lg">
-            <img 
-              src="https://rickandmortyapi.com/api/character/avatar/343.jpeg" 
-              alt="Abadango Cluster Princess"
-              className="w-10 h-10 rounded-full mr-3"
-            />
-            <div className="flex-1">
-              <h4 className="font-medium text-gray-800">Abadango Cluster Princess</h4>
-              <p className="text-sm text-gray-500">Alien</p>
+          {favorites.length === 0 ? (
+            <div className="text-center py-4 text-gray-400 text-sm">
+              No starred characters yet
             </div>
-            <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="flex items-center p-3 bg-purple-100 rounded-lg">
-            <img 
-              src="https://rickandmortyapi.com/api/character/avatar/4.jpeg" 
-              alt="Beth Smith"
-              className="w-10 h-10 rounded-full mr-3"
-            />
-            <div className="flex-1">
-              <h4 className="font-medium text-gray-800">Beth Smith</h4>
-              <p className="text-sm text-gray-500">Human</p>
-            </div>
-            <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-            </svg>
-          </div>
+          ) : (
+            favorites.map((character) => (
+              <div key={character.id} className="flex items-center p-3 bg-purple-100 rounded-lg">
+                <img 
+                  src={character.image} 
+                  alt={character.name}
+                  className="w-10 h-10 rounded-full mr-3"
+                />
+                <div className="flex-1">
+                  <h4 className="font-medium text-gray-800">{character.name}</h4>
+                  <p className="text-sm text-gray-500">{character.species}</p>
+                </div>
+                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
